@@ -61,7 +61,7 @@ public class IntentNode {
     private String parentId;
 
     /**
-     * 示例问题：尤其是“叶子节点”，可以放典型问法，帮助向量模型更精准对齐
+     * 示例问题：尤其是"叶子节点"，可以放典型问法，帮助向量模型更精准对齐
      */
     @Builder.Default
     private List<String> examples = new ArrayList<>();
@@ -125,7 +125,13 @@ public class IntentNode {
     private String paramPromptTemplate;
 
     /**
-     * 是否为“最终节点”（叶子节点）：
+     * 指定使用的模型ID（如 qwen-plus、bailian-edu-agent 等）
+     * 为空时使用全局默认模型
+     */
+    private String modelId;
+
+    /**
+     * 是否为"最终节点"（叶子节点）：
      * - 叶子节点才挂知识库（Milvus Collection）
      * - 叶子节点才会参与意图匹配打分
      */

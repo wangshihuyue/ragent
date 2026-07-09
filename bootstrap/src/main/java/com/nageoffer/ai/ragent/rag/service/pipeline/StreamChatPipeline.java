@@ -171,15 +171,46 @@ public class StreamChatPipeline {
         // 聚合所有意图用于 prompt 规划
         IntentGroup mergedGroup = intentResolver.mergeIntentGroup(ctx.getSubIntents());
 
+        // 从命中意图中提取模型ID：优先取 MCP 意图的 modelId
+        String modelId = resolveModelId(mergedGroup);
+
         StreamCancellationHandle handle = streamLLMResponse(
                 ctx.getRewriteResult(),
                 retrievalCtx,
                 mergedGroup,
                 ctx.getHistory(),
                 ctx.isDeepThinking(),
-                ctx.getCallback()
+                ctx.getCallback(),
+                modelId
         );
         taskManager.bindHandle(ctx.getTaskId(), handle);
+    }
+
+    /**
+     * 从意图分组中获取指定的模型ID
+     * 优先级：MCP 意图 -> KB 意图 -> null（使用全局默认）
+     */
+    private String resolveModelId(IntentGroup mergedGroup) {
+        if (mergedGroup == null) {
+            return null;
+        }
+        // 优先 MCP 意图
+        if (CollUtil.isNotEmpty(mergedGroup.mcpIntents())) {
+            for (var ns : mergedGroup.mcpIntents()) {
+                if (ns.getNode() != null && StrUtil.isNotBlank(ns.getNode().getModelId())) {
+                    return ns.getNode().getModelId();
+                }
+            }
+        }
+        // 其次 KB 意图
+        if (CollUtil.isNotEmpty(mergedGroup.kbIntents())) {
+            for (var ns : mergedGroup.kbIntents()) {
+                if (ns.getNode() != null && StrUtil.isNotBlank(ns.getNode().getModelId())) {
+                    return ns.getNode().getModelId();
+                }
+            }
+        }
+        return null;
     }
 
     // ==================== LLM 响应 ====================
@@ -207,7 +238,8 @@ public class StreamChatPipeline {
 
     private StreamCancellationHandle streamLLMResponse(RewriteResult rewriteResult, RetrievalContext ctx,
                                                        IntentGroup intentGroup, List<ChatMessage> history,
-                                                       boolean deepThinking, StreamCallback callback) {
+                                                       boolean deepThinking, StreamCallback callback,
+                                                       String modelId) {
         PromptContext promptContext = PromptContext.builder()
                 .question(rewriteResult.rewrittenQuestion())
                 .mcpContext(ctx.getMcpContext())
@@ -230,6 +262,10 @@ public class StreamChatPipeline {
                 .topP(ctx.hasMcp() ? 0.8D : 1D)
                 .build();
 
+        if (StrUtil.isNotBlank(modelId)) {
+            log.info("使用意图节点指定模型: {}", modelId);
+            return llmService.streamChat(chatRequest, callback, modelId);
+        }
         return llmService.streamChat(chatRequest, callback);
     }
 }

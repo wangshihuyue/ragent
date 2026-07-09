@@ -17,6 +17,7 @@
 
 package com.nageoffer.ai.ragent.knowledge.mq.event;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,6 +34,7 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@class")
 public class KnowledgeBaseCleanupEvent implements Serializable {
 
     @Serial

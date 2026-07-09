@@ -63,5 +63,10 @@ public class IntentNodeTreeVO {
      */
     private String paramPromptTemplate;
 
+    /**
+     * 指定使用的模型ID，为空时使用全局默认模型
+     */
+    private String modelId;
+
     private List<IntentNodeTreeVO> children;
 }

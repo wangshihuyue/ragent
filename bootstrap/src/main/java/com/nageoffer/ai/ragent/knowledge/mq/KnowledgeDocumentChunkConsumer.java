@@ -24,8 +24,7 @@ import com.nageoffer.ai.ragent.knowledge.mq.event.KnowledgeDocumentChunkEvent;
 import com.nageoffer.ai.ragent.knowledge.service.KnowledgeDocumentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
-import org.apache.rocketmq.spring.core.RocketMQListener;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 /**
@@ -35,15 +34,11 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@RocketMQMessageListener(
-        topic = "knowledge-document-chunk_topic${unique-name:}",
-        consumerGroup = "knowledge-document-chunk_cg${unique-name:}"
-)
-public class KnowledgeDocumentChunkConsumer implements RocketMQListener<MessageWrapper<KnowledgeDocumentChunkEvent>> {
+public class KnowledgeDocumentChunkConsumer {
 
     private final KnowledgeDocumentService documentService;
 
-    @Override
+    @RabbitListener(queues = "${rag.mq.chunk-queue:knowledge-document-chunk_queue${unique-name:}}")
     public void onMessage(MessageWrapper<KnowledgeDocumentChunkEvent> message) {
         KnowledgeDocumentChunkEvent event = message.getBody();
 

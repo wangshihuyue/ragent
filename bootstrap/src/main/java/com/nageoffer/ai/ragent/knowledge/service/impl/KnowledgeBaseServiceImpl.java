@@ -67,7 +67,7 @@ public class KnowledgeBaseServiceImpl implements KnowledgeBaseService {
     private final S3Client s3Client;
     private final MessageQueueProducer messageQueueProducer;
 
-    @Value("knowledge-base-cleanup_topic${unique-name:}")
+    @Value("${rag.mq.cleanup-queue:knowledge-base-cleanup_queue${unique-name:}}")
     private String cleanupTopic;
 
     @Transactional

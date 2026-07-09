@@ -55,7 +55,8 @@ const formSchema = z.object({
   enabled: z.boolean(),
   promptSnippet: z.string().optional(),
   promptTemplate: z.string().optional(),
-  paramPromptTemplate: z.string().optional()
+  paramPromptTemplate: z.string().optional(),
+  modelId: z.string().optional()
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -77,6 +78,7 @@ type FlatIntentNode = {
   promptSnippet?: string | null;
   promptTemplate?: string | null;
   paramPromptTemplate?: string | null;
+  modelId?: string | null;
   pathText: string;
 };
 
@@ -121,6 +123,7 @@ const flattenIntentTree = (
       promptSnippet: node.promptSnippet,
       promptTemplate: node.promptTemplate,
       paramPromptTemplate: node.paramPromptTemplate,
+      modelId: node.modelId,
       pathText: currentPath.join(" > ")
     });
     result.push(...flattenIntentTree(children, currentPath));
@@ -143,7 +146,8 @@ const emptyDefaults: FormValues = {
   enabled: true,
   promptSnippet: "",
   promptTemplate: "",
-  paramPromptTemplate: ""
+  paramPromptTemplate: "",
+  modelId: ""
 };
 
 export function IntentEditPage() {
@@ -224,7 +228,8 @@ export function IntentEditPage() {
       enabled: currentNode.enabled !== 0,
       promptSnippet: currentNode.promptSnippet || "",
       promptTemplate: currentNode.promptTemplate || "",
-      paramPromptTemplate: currentNode.paramPromptTemplate || ""
+      paramPromptTemplate: currentNode.paramPromptTemplate || "",
+      modelId: currentNode.modelId || ""
     };
   }, [currentNode]);
 
@@ -284,7 +289,8 @@ export function IntentEditPage() {
       enabled: values.enabled ? 1 : 0,
       promptSnippet: values.promptSnippet?.trim() || "",
       promptTemplate: values.promptTemplate?.trim() || "",
-      paramPromptTemplate: values.kind === 2 ? values.paramPromptTemplate?.trim() || "" : ""
+      paramPromptTemplate: values.kind === 2 ? values.paramPromptTemplate?.trim() || "" : "",
+      modelId: values.modelId?.trim() || ""
     };
 
     try {
@@ -611,6 +617,20 @@ export function IntentEditPage() {
                               field.onChange(value === "" ? undefined : Number(value));
                             }}
                           />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="modelId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>指定模型/Agent</FormLabel>
+                        <FormControl>
+                          <Input placeholder="留空使用全局默认模型，如 bailian-edu-agent" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

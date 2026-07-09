@@ -15,37 +15,26 @@
  * limitations under the License.
  */
 
-package com.nageoffer.ai.ragent.rag.controller.request;
+package com.nageoffer.ai.ragent.infra.embedding;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.nageoffer.ai.ragent.infra.enums.ModelProvider;
+import okhttp3.OkHttpClient;
+import org.springframework.stereotype.Service;
 
-import java.util.List;
+@Service
+public class DeepSeekEmbeddingClient extends AbstractOpenAIStyleEmbeddingClient {
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class IntentNodeUpdateRequest {
+    public DeepSeekEmbeddingClient(OkHttpClient syncHttpClient) {
+        super(syncHttpClient);
+    }
 
-    private String name;
-    private Integer level;
-    private String parentCode;
-    private String description;
-    private List<String> examples;
-    private String collectionName;
-    private Integer topK;
-    private Integer kind;
-    private Integer sortOrder;
-    private Integer enabled;
-    private String promptSnippet;
-    private String promptTemplate;
-    private String paramPromptTemplate;
+    @Override
+    public String provider() {
+        return ModelProvider.DEEPSEEK.getId();
+    }
 
-    /**
-     * 指定使用的模型ID，为空时使用全局默认模型
-     */
-    private String modelId;
+    @Override
+    protected int maxBatchSize() {
+        return 32;
+    }
 }

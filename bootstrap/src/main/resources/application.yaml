@@ -16,8 +16,8 @@ spring:
     driver-class-name: org.postgresql.Driver
     type: com.zaxxer.hikari.HikariDataSource
     username: postgres
-    password: postgres
-    url: jdbc:postgresql://127.0.0.1:5432/ragent?client_encoding=UTF8
+    password: ErpPgSql$w32NM2024
+    url: jdbc:postgresql://47.94.201.180:22020/ragent?client_encoding=UTF8
     hikari:
       connection-timeout: 5000
       idle-timeout: 600000
@@ -28,15 +28,25 @@ spring:
 
   data:
     redis:
-      host: 127.0.0.1
-      port: 6379
-      password: 123456
+      host: 47.94.201.180 # 地址
+      port: 3202 # 端口
+      database: 6 # 数据库索引
+      password: Alax0518$%QvodteERb1940 # 密码，建议生产环境开启
 
-rocketmq:
-  name-server: 127.0.0.1:9876
-  producer:
-    group: ragent-producer${unique-name:}_pg
-    send-message-timeout: 2000
+  rabbitmq:
+    host: 47.94.201.180 # RabbitMQ 服务的地址
+    port: 5672 # RabbitMQ 服务的端口
+    username: qvodte # RabbitMQ 服务的账号
+    password: Alax2156MqNM1951 # RabbitMQ 服务的密码
+    publisher-confirm-type: correlated
+    publisher-returns: true  #支持发布返回
+    listener:
+      simple:
+        acknowledge-mode: auto #自动应答，异常时触发重试
+        concurrency: 1 #指定最小的消费者数量
+        max-concurrency: 3 #指定最大的消费者数量
+        retry:
+          enabled: true #是否支持重试
 
 milvus:
   uri: http://localhost:19530
@@ -143,22 +153,26 @@ ai:
         embedding: /v1/embeddings
     bailian:
       url: https://dashscope.aliyuncs.com
-      api-key: ${BAILIAN_API_KEY:}
+      api-key: sk-6d3800f78ab6481aa137f8a5bef9d360
       endpoints:
         chat: /compatible-mode/v1/chat/completions
         rerank: /api/v1/services/rerank/text-rerank/text-rerank
-    aihubmix:
-      url: https://aihubmix.com
-      api-key: ${AIHUBMIX_API_KEY:}
+    deepseek:
+      url: https://api.deepseek.com
+      api-key: sk-fddc0078e8f841debddc5df63bc022fc
       endpoints:
         chat: /v1/chat/completions
-        embedding: /v1/embeddings
     siliconflow:
       url: https://api.siliconflow.cn
-      api-key: ${SILICONFLOW_API_KEY:}
+      api-key: sk-pqwpkbwscdxpcjdstjwxkzvbxyqptzljxxsmpywjmwqbakgx
       endpoints:
         chat: /v1/chat/completions
         embedding: /v1/embeddings
+    coze:
+      url: https://api.coze.cn
+      api-key: pat_z7XIZorNGnutPieFoGgDQRFQnmqKL3YhOCtHopaSykrAr269zVHoOmx7VqTKgVZG
+      endpoints:
+        chat: /v1/chat/completions
 
   selection:
     failure-threshold: 2
@@ -189,10 +203,32 @@ ai:
         model: Pro/zai-org/GLM-4.7
         supports-thinking: true
         priority: 4
-      - id: gpt-5.4
-        provider: aihubmix
-        model: gpt-5.4
+      - id: deepseek-chat
+        provider: deepseek
+        model: deepseek-chat
         priority: 5
+      # --- 外部 Agent ---
+      - id: coze-edu-agent
+        provider: coze
+        model: 7654200313280593970
+        priority: 9
+        description: 科科老师
+      # --- 百炼 Agent ---
+      - id: bailian-word-agent
+        provider: bailian
+        model: 02a0ad4b40114ca68c6a6bcb1ba8ff53
+        priority: 10
+        description: 单词
+      - id: bailian-sentence-agent
+        provider: bailian
+        model: 02a0ad4b40114ca68c6a6bcb1ba8ff53
+        priority: 11
+        description: 句子
+      - id: bailian-phrase-agent
+        provider: bailian
+        model: 02a0ad4b40114ca68c6a6bcb1ba8ff53
+        priority: 12
+        description: 短语
 
   embedding:
     default-model: qwen-emb-8b
@@ -207,11 +243,6 @@ ai:
         model: qwen3-embedding:8b-fp16
         dimension: ${rag.default.dimension}
         priority: 2
-      - id: text-embedding-3-large
-        provider: aihubmix
-        model: text-embedding-3-large
-        dimension: ${rag.default.dimension}
-        priority: 3
 
   rerank:
     default-model: qwen3-rerank
@@ -233,7 +264,7 @@ ai:
         model: qwen-vl-max
 
 rustfs:
-  url: http://localhost:9000
+  url: http://120.79.254.43:9000
   access-key-id: rustfsadmin
   secret-access-key: rustfsadmin
   # 多模态解析产物 bucket（PDF 抽出来的图片、未来 PNG 原图等）
@@ -243,7 +274,7 @@ rustfs:
 # MinerU SaaS API 配置（PDF / Word / PPT 走 MinerU 解析）
 mineru:
   api-url: https://mineru.net/api/v4
-  api-key: ${MINERU_API_KEY:}
+  api-key: eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFM1MTIifQ.eyJqdGkiOiI3NDMwMDI0OCIsInJvbCI6IlJPTEVfUkVHSVNURVIiLCJpc3MiOiJPcGVuWExhYiIsImlhdCI6MTc4MzQ5MTgzMCwiY2xpZW50SWQiOiJsa3pkeDU3bnZ5MjJqa3BxOXgydyIsInBob25lIjoiMTg5MDcxODE2NjMiLCJvcGVuSWQiOm51bGwsInV1aWQiOiJhNTkzMWQ5NS0zNWRjLTQ1YTYtOTFiYi1hMWZiYzEzMDAyNTciLCJlbWFpbCI6IiIsImV4cCI6MTc5MTI2NzgzMH0.DMM5kqBwFnM2jyV7v_4g9xMvATmhJZJ9BrsO3SJU4IvlsksPZbQg3eaw7UWqB39rHSKq-2jF6JPYmT3JzlrBaA
   poll-interval-seconds: 5
   timeout-seconds: 300
   enable-table: true

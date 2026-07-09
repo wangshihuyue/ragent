@@ -88,7 +88,8 @@ const formSchema = z.object({
   enabled: z.boolean(),
   promptSnippet: z.string().optional(),
   promptTemplate: z.string().optional(),
-  paramPromptTemplate: z.string().optional()
+  paramPromptTemplate: z.string().optional(),
+  modelId: z.string().optional()
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -515,13 +516,13 @@ function IntentNodeDialog({
         enabled: node.enabled !== 0,
         promptSnippet: node.promptSnippet || "",
         promptTemplate: node.promptTemplate || "",
-        paramPromptTemplate: node.paramPromptTemplate || ""
+        paramPromptTemplate: node.paramPromptTemplate || "",
+        modelId: node.modelId || ""
       };
     }
 
     const nextLevel = parentNode ? Math.min((parentNode.level ?? 0) + 1, 2) : 0;
     const parentKind = parentNode?.kind ?? 0;
-    const kbMatch = knowledgeBases.find((kb) => kb.collectionName === parentNode?.collectionName);
 
     return {
       name: "",
@@ -539,7 +540,8 @@ function IntentNodeDialog({
       enabled: true,
       promptSnippet: "",
       promptTemplate: "",
-      paramPromptTemplate: ""
+      paramPromptTemplate: "",
+      modelId: ""
     };
   }, [mode, node, parentNode, knowledgeBases]);
 
@@ -605,7 +607,8 @@ function IntentNodeDialog({
           mcpToolId: values.kind === 2 ? values.mcpToolId?.trim() || undefined : undefined,
           promptSnippet: values.promptSnippet?.trim() || undefined,
           promptTemplate: values.promptTemplate?.trim() || undefined,
-          paramPromptTemplate: values.kind === 2 ? values.paramPromptTemplate?.trim() || undefined : undefined
+          paramPromptTemplate: values.kind === 2 ? values.paramPromptTemplate?.trim() || undefined : undefined,
+          modelId: values.modelId?.trim() || undefined
         };
         await onCreate(payload);
       } else if (node) {
@@ -623,7 +626,8 @@ function IntentNodeDialog({
           enabled: values.enabled ? 1 : 0,
           promptSnippet: values.promptSnippet?.trim() || undefined,
           promptTemplate: values.promptTemplate?.trim() || undefined,
-          paramPromptTemplate: values.kind === 2 ? values.paramPromptTemplate?.trim() || undefined : undefined
+          paramPromptTemplate: values.kind === 2 ? values.paramPromptTemplate?.trim() || undefined : undefined,
+          modelId: values.modelId?.trim() || undefined
         };
         await onUpdate(node.id, payload);
       }
@@ -963,6 +967,20 @@ function IntentNodeDialog({
                                     field.onChange(nextValue === "" ? undefined : Number(nextValue));
                                   }}
                               />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                      )}
+                  />
+
+                  <FormField
+                      control={form.control}
+                      name="modelId"
+                      render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>指定模型/Agent</FormLabel>
+                            <FormControl>
+                              <Input placeholder="留空使用全局默认模型，如 bailian-edu-agent" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>

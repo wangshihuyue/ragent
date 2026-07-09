@@ -117,6 +117,12 @@ public class IntentNodeDO {
     private String paramPromptTemplate;
 
     /**
+     * 指定使用的模型ID（如 qwen-plus、bailian-edu-agent 等）
+     * 为空时使用全局默认模型
+     */
+    private String modelId;
+
+    /**
      * 是否启用
      */
     private Integer enabled;

@@ -150,6 +150,7 @@ public class IntentTreeServiceImpl extends ServiceImpl<IntentNodeMapper, IntentN
                 .paramPromptTemplate(requestParam.getParamPromptTemplate())
                 .promptSnippet(requestParam.getPromptSnippet())
                 .promptTemplate(requestParam.getPromptTemplate())
+                .modelId(requestParam.getModelId())
                 .deleted(0)
                 .build();
 
@@ -206,6 +207,9 @@ public class IntentTreeServiceImpl extends ServiceImpl<IntentNodeMapper, IntentN
         }
         if (req.getParamPromptTemplate() != null) {
             node.setParamPromptTemplate(req.getParamPromptTemplate());
+        }
+        if (req.getModelId() != null) {
+            node.setModelId(req.getModelId());
         }
         node.setUpdateBy(UserContext.getUsername());
         this.updateById(node);
@@ -334,6 +338,7 @@ public class IntentTreeServiceImpl extends ServiceImpl<IntentNodeMapper, IntentN
                     .promptTemplate(node.getPromptTemplate())
                     .promptSnippet(node.getPromptSnippet())
                     .paramPromptTemplate(node.getParamPromptTemplate())
+                    .modelId(node.getModelId())
                     .build();
             createNode(nodeCreateRequest);
             created++;

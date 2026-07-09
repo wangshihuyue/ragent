@@ -121,6 +121,11 @@ public class AIModelProperties {
         private String url;
 
         /**
+         * 模型描述
+         */
+        private String description;
+
+        /**
          * 向量维度（用于 embedding 模型）
          */
         private Integer dimension;

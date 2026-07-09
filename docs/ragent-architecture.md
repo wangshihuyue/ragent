@@ -15,7 +15,7 @@
 | 框架 | Spring Boot 3.5.7 |
 | 向量数据库 | Milvus 2.6.6 / PostgreSQL pgvector |
 | ORM | MyBatis-Plus 3.5.14 |
-| 消息队列 | RocketMQ |
+| 消息队列 | RabbitMQ |
 | 文档解析 | Apache Tika 3.2.3 |
 | 权限 | Sa-Token |
 

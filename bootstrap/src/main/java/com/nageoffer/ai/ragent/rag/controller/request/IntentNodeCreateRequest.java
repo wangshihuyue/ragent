@@ -60,4 +60,9 @@ public class IntentNodeCreateRequest {
      * 参数提取提示词模板（MCP模式专属）
      */
     private String paramPromptTemplate;
+
+    /**
+     * 指定使用的模型ID，为空时使用全局默认模型
+     */
+    private String modelId;
 }

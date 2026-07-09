@@ -123,7 +123,7 @@ public class KnowledgeDocumentServiceImpl implements KnowledgeDocumentService {
     private final KnowledgeScheduleProperties scheduleProperties;
     private final RemoteFileFetcher remoteFileFetcher;
 
-    @Value("knowledge-document-chunk_topic${unique-name:}")
+    @Value("${rag.mq.chunk-queue:knowledge-document-chunk_queue${unique-name:}}")
     private String chunkTopic;
 
     @Override

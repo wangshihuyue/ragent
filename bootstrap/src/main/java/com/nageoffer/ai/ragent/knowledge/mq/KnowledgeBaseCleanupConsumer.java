@@ -25,8 +25,7 @@ import com.nageoffer.ai.ragent.rag.core.vector.keyword.KeywordIndexService;
 import com.nageoffer.ai.ragent.rag.service.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
-import org.apache.rocketmq.spring.core.RocketMQListener;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
@@ -39,11 +38,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@RocketMQMessageListener(
-        topic = "knowledge-base-cleanup_topic${unique-name:}",
-        consumerGroup = "knowledge-base-cleanup_cg${unique-name:}"
-)
-public class KnowledgeBaseCleanupConsumer implements RocketMQListener<MessageWrapper<KnowledgeBaseCleanupEvent>> {
+public class KnowledgeBaseCleanupConsumer {
 
     private final VectorStoreAdmin vectorStoreAdmin;
     private final FileStorageService fileStorageService;
@@ -52,7 +47,7 @@ public class KnowledgeBaseCleanupConsumer implements RocketMQListener<MessageWra
      */
     private final ObjectProvider<KeywordIndexService> keywordIndexServiceProvider;
 
-    @Override
+    @RabbitListener(queues = "${rag.mq.cleanup-queue:knowledge-base-cleanup_queue${unique-name:}}")
     public void onMessage(MessageWrapper<KnowledgeBaseCleanupEvent> message) {
         KnowledgeBaseCleanupEvent event = message.getBody();
         String collectionName = event.getCollectionName();

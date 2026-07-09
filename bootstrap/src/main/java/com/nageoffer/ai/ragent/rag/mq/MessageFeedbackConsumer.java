@@ -22,8 +22,7 @@ import com.nageoffer.ai.ragent.rag.mq.event.MessageFeedbackEvent;
 import com.nageoffer.ai.ragent.rag.service.MessageFeedbackService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
-import org.apache.rocketmq.spring.core.RocketMQListener;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 /**
@@ -32,15 +31,11 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@RocketMQMessageListener(
-        topic = "message-feedback_topic${unique-name:}",
-        consumerGroup = "message-feedback_cg${unique-name:}"
-)
-public class MessageFeedbackConsumer implements RocketMQListener<MessageWrapper<MessageFeedbackEvent>> {
+public class MessageFeedbackConsumer {
 
     private final MessageFeedbackService feedbackService;
 
-    @Override
+    @RabbitListener(queues = "${rag.mq.feedback-queue:message-feedback_queue${unique-name:}}")
     public void onMessage(MessageWrapper<MessageFeedbackEvent> message) {
         MessageFeedbackEvent event = message.getBody();
 
