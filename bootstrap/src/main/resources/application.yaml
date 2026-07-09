@@ -229,6 +229,12 @@ ai:
         model: 02a0ad4b40114ca68c6a6bcb1ba8ff53
         priority: 12
         description: 短语
+      - id: bailian-ziyoubiaoshu-agent
+        provider: bailian
+        model: 474342a986cb4e99b3fc44fe744d2639
+        protocol: agent
+        priority: 12
+        description: 自由表述
 
   embedding:
     default-model: qwen-emb-8b

@@ -116,6 +116,11 @@ public class AIModelProperties {
         private String model;
 
         /**
+         * 调用协议，默认走 OpenAI 兼容协议；agent 表示百炼应用协议
+         */
+        private String protocol;
+
+        /**
          * 模型访问 URL
          */
         private String url;

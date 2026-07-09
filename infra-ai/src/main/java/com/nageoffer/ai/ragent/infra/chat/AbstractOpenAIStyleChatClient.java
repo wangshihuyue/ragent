@@ -55,13 +55,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public abstract class AbstractOpenAIStyleChatClient implements ChatClient {
 
     @Autowired
-    private OkHttpClient syncHttpClient;
+    protected OkHttpClient syncHttpClient;
     @Autowired
-    private OkHttpClient streamingHttpClient;
+    protected OkHttpClient streamingHttpClient;
     @Autowired
-    private Executor modelStreamExecutor;
+    protected Executor modelStreamExecutor;
     @Autowired
-    private RagStreamTraceSupport streamTraceSupport;
+    protected RagStreamTraceSupport streamTraceSupport;
 
     protected Gson gson = new Gson();
 
@@ -167,7 +167,7 @@ public abstract class AbstractOpenAIStyleChatClient implements ChatClient {
         }
     }
 
-    private void doStream(Call call, StreamCallback callback, AtomicBoolean cancelled, boolean reasoningEnabled) {
+    protected void doStream(Call call, StreamCallback callback, AtomicBoolean cancelled, boolean reasoningEnabled) {
         try (Response response = call.execute()) {
             if (!response.isSuccessful()) {
                 String body = HttpResponseHelper.readBody(response.body());
@@ -274,7 +274,7 @@ public abstract class AbstractOpenAIStyleChatClient implements ChatClient {
         };
     }
 
-    private Request.Builder newAuthorizedRequest(AIModelProperties.ProviderConfig provider, ModelTarget target) {
+    protected Request.Builder newAuthorizedRequest(AIModelProperties.ProviderConfig provider, ModelTarget target) {
         Request.Builder builder = new Request.Builder()
                 .url(ModelUrlResolver.resolveUrl(provider, target.candidate(), ModelCapability.CHAT));
         if (requiresApiKey()) {
